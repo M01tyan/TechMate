@@ -15,7 +15,7 @@ type Post struct {
 
 var Db *sql.DB
 
-func init() {
+func Init() {
     var err error
     Db, err = sql.Open("postgres", os.Getenv("DATABASE_URL"))
     if err != nil {
@@ -41,6 +41,15 @@ func GetPost(genre []string) (complete_es []Post, err error) {
 	        }
 	    }
 	}
+    return
+}
+
+func Sample() (genre_name string) {
+    rows, err := Db.Query("SELECT name FROM genres WHERE genres.id = 1")
+    if err != nil {
+        fmt.Print(err)
+    }
+    rows.Scan(&genre_name)
     return
 }
 

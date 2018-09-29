@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"github.com/M01tyan/TechMate"
+	"github.com/M01tyan/TechMate/modules"
 
 	"github.com/gin-gonic/gin"
 	"github.com/line/line-bot-sdk-go/linebot"

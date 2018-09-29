@@ -11,10 +11,6 @@
 			"Rev": "2eef78a728922daaad7b9ee63039e0e4730870fd"
 		},
 		{
-			"ImportPath": "github.com/M01tyan/TechMate/modules",
-			"Rev": "2eef78a728922daaad7b9ee63039e0e4730870fd"
-		},
-		{
 			"ImportPath": "github.com/gin-contrib/sse",
 			"Rev": "22d885f9ecc78bf4ee5d72b937e4bbcdc58e8cae"
 		},
