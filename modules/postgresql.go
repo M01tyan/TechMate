@@ -36,6 +36,11 @@ func GetPost(genre []string) (complete_es []Post, err error) {
 }
 
 func Sample() (genre_name string) {
+    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+    if err != nil {
+        panic(err)
+        Db.Close()
+    }
     rows, err := Db.Query("SELECT name FROM genres WHERE genres.id = 1")
     if err != nil {
         fmt.Print(err)

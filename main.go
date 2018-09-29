@@ -1,24 +1,14 @@
 package main
 
 import (
-	"database/sql"
 	"log"
 	"net/http"
 	"os"
-	
+
 	"github.com/heroku/TechMate/modules"
 	"github.com/gin-gonic/gin"
 	"github.com/line/line-bot-sdk-go/linebot"
 )
-
-func init() {
-    var err error
-    Db, err = sql.Open("postgres", os.Getenv("DATABASE_URL"))
-    if err != nil {
-        panic(err)
-        Db.Close()
-    }
-}
 
 func main() {
 	port := os.Getenv("PORT")
