@@ -1,0 +1,1 @@
+insert into user_table (name, line_id, student_id) values ('三井　春輝', 'df9s8daf78dsaf7sd8f9sa8ddss9d8afsdasdfa', 's1240218') returning id;

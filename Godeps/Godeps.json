@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/heroku/go-getting-started",
+	"ImportPath": "github.com/heroku/TechMate",
 	"GoVersion": "go1.11",
 	"GodepVersion": "v80",
 	"Packages": [
@@ -47,6 +47,16 @@
 			"ImportPath": "github.com/json-iterator/go",
 			"Comment": "1.1.5-8-g2433035",
 			"Rev": "2433035e513208b0f7bd5b50d0aecd889b2c1ff8"
+		},
+		{
+			"ImportPath": "github.com/lib/pq",
+			"Comment": "v1.0.0",
+			"Rev": "4ded0e9383f75c197b3a2aaa6d590ac52df6fd79"
+		},
+		{
+			"ImportPath": "github.com/lib/pq/oid",
+			"Comment": "v1.0.0",
+			"Rev": "4ded0e9383f75c197b3a2aaa6d590ac52df6fd79"
 		},
 		{
 			"ImportPath": "github.com/line/line-bot-sdk-go/linebot",

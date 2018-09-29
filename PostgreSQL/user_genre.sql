@@ -1,0 +1,1 @@
+insert into user_genre_table (user_id, genre_id) values (2, 5);

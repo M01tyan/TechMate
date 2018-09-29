@@ -7,13 +7,6 @@ import (
     _ "github.com/lib/pq"
 )
 
-type GENRE struct {
-    ID          int
-    NAME        string
-    LINE_ID     string
-    STUDENT_ID  string
-    GENRE_NAME  string
-}
 type Post struct {
     NAME        string
     STUDENT_ID  string
