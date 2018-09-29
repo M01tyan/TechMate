@@ -1,1 +1,1 @@
-insert into users (name, line_id, student_id) values ('前田 幹太', '', 's1240236');
+insert into users (name, line_id, student_id) values ('前田 幹太', 'U4ae539e7088043dff2e3345660f308fe', 's1240236');

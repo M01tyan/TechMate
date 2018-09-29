@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-	//"github.com/M01tyan/TechMate/modules"
+	"github.com/M01tyan/TechMate"
 
 	"github.com/gin-gonic/gin"
 	"github.com/line/line-bot-sdk-go/linebot"
@@ -47,7 +47,7 @@ func main() {
 				switch message := event.Message.(type) {
 				case *linebot.TextMessage:
 					log.Print(event)
-					text := message.Text + event.Source.UserID
+					text := TechMate.Sample()
 					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(text)).Do(); err != nil {
 						log.Print(err)
 					}

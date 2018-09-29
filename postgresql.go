@@ -1,4 +1,4 @@
-package modules
+package TechMate
 
 import (
     "database/sql"
