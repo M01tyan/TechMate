@@ -47,7 +47,7 @@ func main() {
 				switch message := event.Message.(type) {
 				case *linebot.TextMessage:
 					log.Print(event)
-					text := "hello" + event.source.userId
+					text := message.Text + event.ReplyToken
 					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(text)).Do(); err != nil {
 						log.Print(err)
 					}
