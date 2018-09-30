@@ -40,12 +40,12 @@ func Sample() (genre_name string) {
     log.Print("success")
     Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
     if err != nil {
-        panic(err)
+        log.Print(err)
         Db.Close()
     }
     rows, err := Db.Query("SELECT name FROM genres WHERE genres.id = 1")
     if err != nil {
-        fmt.Print(err)
+        log.Print(err)
     }
     rows.Scan(&genre_name)
     log.Print(genre_name)
