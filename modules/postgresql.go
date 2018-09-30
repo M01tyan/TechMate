@@ -4,6 +4,7 @@ import (
     "database/sql"
     "fmt"
     "os"
+    "log"
 
     _ "github.com/lib/pq"
 )
@@ -36,7 +37,7 @@ func GetPost(genre []string) (complete_es []Post, err error) {
 }
 
 func Sample() (genre_name string) {
-    fmt.Print("success")
+    log.Print("success")
     Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
     if err != nil {
         panic(err)
@@ -47,6 +48,7 @@ func Sample() (genre_name string) {
         fmt.Print(err)
     }
     rows.Scan(&genre_name)
+    log.Print(genre_name)
     return
 }
 
