@@ -4,11 +4,14 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"database/sql"
 
-	"github.com/heroku/TechMate/modules"
+//	"github.com/heroku/TechMate/modules"
 	"github.com/gin-gonic/gin"
 	"github.com/line/line-bot-sdk-go/linebot"
 )
+
+var Db *sql.DB
 
 func main() {
 	port := os.Getenv("PORT")
@@ -46,7 +49,19 @@ func main() {
 			if event.Type == linebot.EventTypeMessage {
 				switch message := event.Message.(type) {
 				case *linebot.TextMessage:
-					text := modules.Sample() + message.Text
+					log.Print("success")
+				    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+				    if err != nil {
+				        log.Print(err)
+				        Db.Close()
+				    }
+				    var genre_name string
+				    rows, err := Db.Query("SELECT name FROM genres WHERE genres.id = 1")
+				    if err != nil {
+				        log.Print(err)
+				    }
+				    rows.Scan(&genre_name)
+					text := message.Text + genre_name
 					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(text)).Do(); err != nil {
 						log.Print(err)
 					}
