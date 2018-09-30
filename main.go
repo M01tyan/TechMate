@@ -9,6 +9,7 @@ import (
 //	"github.com/heroku/TechMate/modules"
 	"github.com/gin-gonic/gin"
 	"github.com/line/line-bot-sdk-go/linebot"
+	_ "github.com/lib/pq"
 )
 
 var Db *sql.DB
