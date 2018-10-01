@@ -13,6 +13,7 @@ import (
 )
 
 
+var Db *sql.DB
 func main() {
 	port := os.Getenv("PORT")
 
@@ -50,19 +51,13 @@ func main() {
 				switch message := event.Message.(type) {
 				case *linebot.TextMessage:
 					log.Print("success")
-					var Db *sql.DB
 				    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 				    if err != nil {
 				    	panic(err)
 				        log.Print(err)
 				        Db.Close()
 				    }
-				    var genre_name string
-				    errs := Db.QueryRow("SELECT name FROM genres WHERE id=$1", 1).Scan(&genre_name)
-				    if err != nil {
-				        log.Print(errs)
-				    }
-				    log.Print(genre_name)
+				    genre_name := moduels.Sample()
 					text := message.Text + genre_name
 					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(text)).Do(); err != nil {
 						log.Print(err)
