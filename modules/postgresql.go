@@ -23,7 +23,7 @@ func GetPost(genre []string) (complete_es []Post) {
         Db.Close()
     }
 	for _, g := range genre {
-	    rows, err := Db.Query("SELECT users.name, users.student_id FROM users LEFT JOIN users_genres ON users.id = users_genres.user_id LEFT JOIN genres ON users_genres.genre_id = genres.id WHERE genres.name = $1", g)
+	    rows, err := Db.Query("SELECT users.name, users.student_id FROM users LEFT JOIN user_genre ON users.id = user_genre.user_id LEFT JOIN genres ON user_genre.genre_id = genres.id WHERE genres.name = $1", g)
 	    if err != nil {
 	        log.Println(err)
 	    }
