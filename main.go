@@ -48,8 +48,9 @@ func main() {
 			if event.Type == linebot.EventTypeMessage {
 				switch message := event.Message.(type) {
 				case *linebot.TextMessage:
-				    genre_name := modules.Sample()
-					text := message.Text + genre_name
+					genres := []string{"React", "JavaScript"}
+				    genre := modules.GetPost(genres)
+					text := message.Text + genre[0].NAME
 					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(text)).Do(); err != nil {
 						log.Print(err)
 					}

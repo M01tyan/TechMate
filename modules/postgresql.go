@@ -16,7 +16,7 @@ type Post struct {
 
 var Db *sql.DB
 
-func GetPost(genre []string) (complete_es []Post, err error) {
+func GetPost(genre []string) (complete_es []Post) {
 	for _, g := range genre {
 	    rows, err := Db.Query("SELECT users.name, users.student_id FROM users LEFT JOIN users_genres ON users.id = users_genres.user_id LEFT JOIN genres ON users_genres.genre_id = genres.id WHERE genres.name = $1", g)
 	    if err != nil {
@@ -33,6 +33,7 @@ func GetPost(genre []string) (complete_es []Post, err error) {
 	        }
 	    }
 	}
+    log.Print(complete_es)
     return
 }
 
