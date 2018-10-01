@@ -43,12 +43,10 @@ func Sample() (genre_name string) {
         log.Print(err)
         Db.Close()
     }
-    log.Print(Db)
-    rows, errs := Db.Query("SELECT name FROM genres WHERE id=$1", 1)
+    errs := Db.QueryRow("SELECT name FROM genres WHERE id=$1", 1).Scan(&genre_name)
     if errs != nil {
         log.Print(errs)
     }
-    rows.Scan(&genre_name)
     log.Print(genre_name)
     return
 }
