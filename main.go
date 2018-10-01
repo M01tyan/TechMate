@@ -64,6 +64,7 @@ func main() {
 				    }
 				    log.Print(rows)
 				    rows.Scan(&genre_name)
+				    log.Print(*genre_name)
 					text := message.Text + genre_name
 					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(text)).Do(); err != nil {
 						log.Print(err)
