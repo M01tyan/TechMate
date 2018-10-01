@@ -57,7 +57,7 @@ func main() {
 				        log.Print(err)
 				        Db.Close()
 				    }
-				    genre_name := moduels.Sample()
+				    genre_name := modules.Sample()
 					text := message.Text + genre_name
 					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(text)).Do(); err != nil {
 						log.Print(err)
