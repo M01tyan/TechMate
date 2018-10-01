@@ -17,10 +17,15 @@ type Post struct {
 var Db *sql.DB
 
 func GetPost(genre []string) (complete_es []Post) {
+    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+    if err != nil {
+        log.Print(err)
+        Db.Close()
+    }
 	for _, g := range genre {
 	    rows, err := Db.Query("SELECT users.name, users.student_id FROM users LEFT JOIN users_genres ON users.id = users_genres.user_id LEFT JOIN genres ON users_genres.genre_id = genres.id WHERE genres.name = $1", g)
 	    if err != nil {
-	        fmt.Println(err)
+	        log.Println(err)
 	    }
 
 	    for rows.Next() {
