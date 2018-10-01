@@ -12,7 +12,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var Db *sql.DB
 
 func main() {
 	port := os.Getenv("PORT")
@@ -51,6 +50,7 @@ func main() {
 				switch message := event.Message.(type) {
 				case *linebot.TextMessage:
 					log.Print("success")
+					var Db *sql.DB
 				    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 				    if err != nil {
 				    	panic(err)
@@ -58,13 +58,11 @@ func main() {
 				        Db.Close()
 				    }
 				    var genre_name string
-				    rows, err := Db.Query("SELECT name FROM genres WHERE genres.id = 1")
+				    errs := Db.QueryRow("SELECT name FROM genres WHERE id=$1", 1).Scan(&genre_name)
 				    if err != nil {
-				        log.Print(err)
+				        log.Print(errs)
 				    }
-				    log.Print(rows)
-				    rows.Scan(&genre_name)
-				    log.Print(*genre_name)
+				    log.Print(genre_name)
 					text := message.Text + genre_name
 					if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(text)).Do(); err != nil {
 						log.Print(err)
