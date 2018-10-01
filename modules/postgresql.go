@@ -31,11 +31,11 @@ func GetPost(genre []string) (complete_es []Post) {
 	    for rows.Next() {
 	        var e Post
 	        rows.Scan(&e.NAME, &e.STUDENT_ID)
-	        for _, es := range complete_es {
-	        	if es.STUDENT_ID != e.STUDENT_ID {
+	        //for _, es := range complete_es {
+	        //	if es.STUDENT_ID != e.STUDENT_ID {
 	        		complete_es = append(complete_es, e)
-	        	}
-	        }
+	        //	}
+	        //}
 	    }
 	}
     log.Print(complete_es)
