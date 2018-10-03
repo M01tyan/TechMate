@@ -3,8 +3,9 @@ package main
 import (
 	"log"
 	"net/http"
-	_"os"
+	"os"
 	"regexp"
+	"io/ioutil"
 
 	"github.com/heroku/TechMate/modules"
 	"github.com/gin-gonic/gin"
@@ -14,389 +15,16 @@ import (
 
 
 func main() {
-	//port := os.Getenv("PORT")
-	port := "8080"
+	port := os.Getenv("PORT")
 	mode := "init_new"
 	student_id := ""
 	line_id := ""
 	name := ""
 	my_genre := []string{}
-/*
-	flex_message := []byte(`{
-	  "type": "carousel",
-	  "contents": [
-	    {
-	      "type": "bubble",
-	      "body": {
-	        "type": "box",
-	        "layout": "vertical",
-	        "spacing": "sm",
-	        "contents": [
-	          {
-	            "type": "text",
-	            "flex": 1,
-	            "text": "ジャンルを選択してください"
-	          },
-	          {
-	            "type": "text",
-	            "flex": 1,
-	            "text": "(※最大５個まで)"
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "C",
-	              "text": "C"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "Java",
-	              "text": "Java"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "C++",
-	              "text": "C++"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "Ruby on Rails",
-	              "text": "Ruby on Rails"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "Python",
-	              "text": "Python"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "Swift",
-	              "text": "Swift"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "color": "#aaaaaa",
-	            "action": {
-	              "type": "message",
-	              "label": "終了",
-	              "text": "終了"
-	            }
-	          }
-	        ]
-	      }
-	    },
-	    {
-	      "type": "bubble",
-	      "body": {
-	        "type": "box",
-	        "layout": "vertical",
-	        "spacing": "sm",
-	        "contents": [
-	          {
-	            "type": "text",
-	            "flex": 1,
-	            "text": "ジャンルを選択してください"
-	          },
-	          {
-	            "type": "text",
-	            "flex": 1,
-	            "text": "(※最大５個まで)"
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "HTML",
-	              "text": "HTML"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "CSS",
-	              "text": "CSS"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "JavaScript",
-	              "text": "JavaScript"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "Kotlin",
-	              "text": "Kotlin"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "React",
-	              "text": "React"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "Vue",
-	              "text": "Vue"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "color": "#aaaaaa",
-	            "action": {
-	              "type": "message",
-	              "label": "終了",
-	              "text": "終了"
-	            }
-	          }
-	        ]
-	      }
-	    },
-	    {
-	      "type": "bubble",
-	      "body": {
-	        "type": "box",
-	        "layout": "vertical",
-	        "spacing": "sm",
-	        "contents": [
-	          {
-	            "type": "text",
-	            "flex": 1,
-	            "text": "ジャンルを選択してください"
-	          },
-	          {
-	            "type": "text",
-	            "flex": 1,
-	            "text": "(※最大５個まで)"
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "PHP",
-	              "text": "PHP"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "Go",
-	              "text": "Go"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "SQL",
-	              "text": "SQL"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "Ruby",
-	              "text": "Ruby"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "Unity",
-	              "text": "Unity"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "Perl",
-	              "text": "Perl"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "color": "#aaaaaa",
-	            "action": {
-	              "type": "message",
-	              "label": "終了",
-	              "text": "終了"
-	            }
-	          }
-	        ]
-	      }
-	    },
-	    {
-	      "type": "bubble",
-	      "body": {
-	        "type": "box",
-	        "layout": "vertical",
-	        "spacing": "sm",
-	        "contents": [
-	          {
-	            "type": "text",
-	            "flex": 1,
-	            "text": "ジャンルを選択してください"
-	          },
-	          {
-	            "type": "text",
-	            "flex": 1,
-	            "text": "(※最大５個まで)"
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "Git",
-	              "text": "Git"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "Raspberry Pi",
-	              "text": "Raspberry Pi"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "AWS",
-	              "text": "AWS"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "AI",
-	              "text": "AI"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "Deep Learning",
-	              "text": "Deep Learning"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "action": {
-	              "type": "message",
-	              "label": "画像解析",
-	              "text": "画像解析"
-	            }
-	          },
-	          {
-	            "type": "button",
-	            "flex": 1,
-	            "style": "primary",
-	            "color": "#aaaaaa",
-	            "action": {
-	              "type": "message",
-	              "label": "終了",
-	              "text": "終了"
-	            }
-	          }
-	        ]
-	      }
-	    }
-	  ]
-	}`)
-*/
+
 	bot, err := linebot.New(
-		//os.Getenv("LINE_CHANNEL_SECRET"),
-		//os.Getenv("LINE_CHANNEL_TOKEN"),
-		"016d6abfada205ab9c9de38a7b6518d8",
-		"pmpxhqajHvsM+vLfTuStk75zWOPP84bD/trCrT7uWSGWHOc3CQi/39s1snUpPLKBB0oSW3mI3Iw9dReOWPcKlkZOa/2TzhU7JAKiYd6+oUFD2pcjhf+cCFVzykrSk3qnJm5z8SqJR/dUWcg+nUXqEgdB04t89/1O/w1cDnyilFU=",
+		os.Getenv("LINE_CHANNEL_SECRET"),
+		os.Getenv("LINE_CHANNEL_TOKEN"),
 	)
 	if err != nil {
 		log.Fatal(err)
@@ -440,45 +68,22 @@ func main() {
 						}
 					case "init_name":
 						name = message.Text
-						/*
-						if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("ジャンルを入力してください。")).Do(); err != nil {
-							log.Print(err)
-						}
-						*/
-						container := &linebot.BubbleContainer{
-							Type: linebot.FlexContainerTypeBubble,
-        					Body: &linebot.BoxComponent{
-        						Type:   linebot.FlexComponentTypeBox,
-					            Layout: linebot.FlexBoxLayoutTypeHorizontal,
-					            Contents: []linebot.FlexComponent{
-					                &linebot.TextComponent{
-					                    Type: linebot.FlexComponentTypeText,
-					                    Text: "ジャンルを選択してください",
-					                },
-					                &linebot.ButtonComponent{
-					                    Type: linebot.FlexComponentTypeButton,
-					                    Flex: 1,
-					                    Style: linebot.FlexButtonStyleTypePrimary,
-					                    Color: "#aaaaaa",
-					                    Action: linebot.ActionTypeMessage {
-					                    	Lable: "C",
-					                    	Text: "C",
-					                    },
-					                },
-					            },
-					        },
+						genres_json, err := ioutil.ReadFile("./modules/genre_flex.json")
+						if err != nil {
+					        log.Fatal(err)
 					    }
-						if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewFlexMessage("ジャンル", container)).Do(); err != nil {
+						genre_flex, errs := linebot.UnmarshalFlexMessageJSON(genres_json)
+						if errs != nil {
+							log.Print(errs)
+						}
+						if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewFlexMessage("ジャンル", genre_flex)).Do(); err != nil {
 							log.Print(err)
 						}
 						mode = "init_genre"
 					case "init_genre":
 						if message.Text == "終了" {
-							var print_genre string
-							for _, g := range my_genre {
-								print_genre += g + "\n"
-							}
-							if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("学籍番号：　"+student_id+"\n名前：　"+name+"\nジャンル\n"+print_genre+"\nこちらで登録してよろしいですか。")).Do(); err != nil {
+							confirm := modules.Confirm(student_id, name, my_genre)
+							if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewFlexMessage("ジャンル", confirm)).Do(); err != nil {
 								log.Print(err)
 							}
 							mode = "init_continue"
@@ -493,19 +98,41 @@ func main() {
 							}
 							my_genre = nil
 							mode = "default"
+						} else {
+							student_id = ""
+							name = ""
+							my_genre = nil
+							if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("登録をキャンセルしました。\nもう一度学籍番号から入力してください。")).Do(); err != nil {
+								log.Print(err)
+							}
+							mode = "init_new"
 						}
 					case "default":
 						if message.Text == "検索" {
-						    genre := modules.GetPost(my_genre)
-						    var print_genre string
-						    for _, g := range genre {
-						    	print_genre += g.NAME + "\n"
-							}
-							if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(print_genre)).Do(); err != nil {
-								log.Print(err)
+							genres_json, err := ioutil.ReadFile("./modules/genre_flex.json")
+							if err != nil {
+						        log.Fatal(err)
 						    }
-							mode = "default"
+							genre_flex, errs := linebot.UnmarshalFlexMessageJSON(genres_json)
+							if errs != nil {
+								log.Print(errs)
+							}
+							if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewFlexMessage("ジャンル", genre_flex)).Do(); err != nil {
+								log.Print(err)
+							}
+							mode = "search"
 						}
+					case "search":
+						var print_result string
+						search := message.Text
+						search_result := modules.GetPost(search)
+						for _, r := range search_result {
+							print_result += r.NAME + "\t" + r.STUDENT_ID + "\n"
+						}
+						if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(print_result)).Do(); err != nil {
+							log.Print(err)
+						}
+						mode = "default"
 					}
 				}
 			} else if event.Type == linebot.EventTypeFollow {

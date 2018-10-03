@@ -16,46 +16,49 @@ type Post struct {
 
 var Db *sql.DB
 
-func GetPost(genre []string) (complete_es []Post) {
-    Db, err := sql.Open("postgres", "host=localhost user=m01tyan password=No.1runner dbname=techmate sslmode=disable")
-    if err != nil {
-        log.Print(err)
-        Db.Close()
-    }
-	for _, g := range genre {
-	    rows, err := Db.Query("SELECT users.name, users.student_id FROM users LEFT JOIN user_genre ON users.id = user_genre.user_id LEFT JOIN genres ON user_genre.genre_id = genres.id WHERE genres.name = $1", g)
-	    if err != nil {
-	        log.Println(err)
-	    }
-
-	    for rows.Next() {
-	        var e Post
-	        rows.Scan(&e.NAME, &e.STUDENT_ID)
-	        complete_es = append(complete_es, e)
-	    }
-	}
-    log.Print(complete_es)
-    return
-}
-
-func Sample() (genre_name string) {
-    log.Print("success")
+func GetPost(genre string) (complete_es []Post) {
     Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
     if err != nil {
         log.Print(err)
         Db.Close()
     }
-    errs := Db.QueryRow("SELECT name FROM genres WHERE id=$1", 1).Scan(&genre_name)
+	rows, err := Db.Query("SELECT users.name, users.student_id FROM users LEFT JOIN user_genre ON users.id = user_genre.user_id LEFT JOIN genres ON user_genre.genre_id = genres.id WHERE genres.name = $1", genre)
+    if err != nil {
+        log.Println(err)
+    }
+
+    for rows.Next() {
+        var e Post
+	    rows.Scan(&e.NAME, &e.STUDENT_ID)
+	    complete_es = append(complete_es, e)
+	}
+    log.Print(complete_es)
+    return
+}
+
+func GetGenres() (genre_names []string) {
+    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+    if err != nil {
+        log.Print(err)
+        Db.Close()
+    }
+    row, errs := Db.Query("SELECT name FROM genres")
     if errs != nil {
         log.Print(errs)
     }
-    log.Print(genre_name)
+
+    for row.Next() {
+        var e string
+        row.Scan(&e)
+        genre_names = append(genre_names, e)
+    }
+    log.Print(genre_names)
     return
 }
 
 func InsertData(name string, line_id string, student_id string, genre []string) {
     var id int
-    Db, errs := sql.Open("postgres", "host=localhost user=m01tyan password=No.1runner dbname=techmate sslmode=disable")
+    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
     if errs != nil {
         log.Print(errs)
         Db.Close()
@@ -63,9 +66,7 @@ func InsertData(name string, line_id string, student_id string, genre []string) 
     err := Db.QueryRow("INSERT INTO users (name, line_id, student_id) VALUES ($1, $2, $3) RETURNING id", name, line_id, student_id).Scan(&id)
     if err != nil {
         fmt.Println(err)
-    }/*
-    var user_id int
-    row.Scan(&user_id)*/
+    }
     for _, g := range genre {
         var genre_id int
         errs := Db.QueryRow("SELECT id FROM genres WHERE name=$1", g).Scan(&genre_id)
@@ -78,6 +79,8 @@ func InsertData(name string, line_id string, student_id string, genre []string) 
         }
     }
 }
+
+
 
     /*
 func main() {
