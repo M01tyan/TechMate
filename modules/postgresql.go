@@ -58,7 +58,7 @@ func GetGenres() (genre_names []string) {
 
 func InsertData(name string, line_id string, student_id string, genre []string) {
     var id int
-    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+    Db, errs := sql.Open("postgres", os.Getenv("DATABASE_URL"))
     if errs != nil {
         log.Print(errs)
         Db.Close()
