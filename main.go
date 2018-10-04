@@ -114,11 +114,21 @@ func main() {
 								log.Print(err)
 							}
 							mode = modules.UpdateMode(6, event.Source.UserID)
+						} else {
+							if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("チェックから検索をタップしてください")).Do(); err != nil {
+								log.Print(err)
+							}
 						}
 					case "search":
 						result := modules.GetPost(message.Text)
-						if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(result)).Do(); err != nil {
-							log.Print(err)
+						if result == "" {
+							if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("現在選択しているユーザーがいません。")).Do(); err != nil {
+								log.Print(err)
+							}
+						} else {
+							if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(result)).Do(); err != nil {
+								log.Print(err)
+							}
 						}
 						mode = modules.UpdateMode(5, event.Source.UserID)
 					}
