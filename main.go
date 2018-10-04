@@ -78,7 +78,7 @@ func main() {
 						mode = modules.UpdateMode(3, event.Source.UserID)
 					case "init_genre":
 						if message.Text == "終了" {
-							confirm := modules.Confirm(modules.GetName(event.Source.UserID), modules.GetName(event.Source.UserID), modules.GetGenres(event.Source.UserID))
+							confirm := modules.Confirm(modules.GetStudentID(event.Source.UserID), modules.GetName(event.Source.UserID), modules.GetGenres(event.Source.UserID))
 							if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewFlexMessage("ジャンル", confirm)).Do(); err != nil {
 								log.Print(err)
 							}
@@ -98,6 +98,7 @@ func main() {
 								log.Print(err)
 							}
 							mode = modules.UpdateMode(1, event.Source.UserID)
+							modules.DeleteData(event.Source.UserID)
 						}
 					case "default":
 						if message.Text == "検索" {
