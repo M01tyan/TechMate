@@ -79,8 +79,12 @@ func InsertGenre(genre string, line_id string) {
         Db.Close()
     }
     var user_id int
+    err = Db.QueryRow("SELECT id FROM users WHERE line_id = $1", line_id).Scan(&user_id)
+    if err != nil {
+        log.Println(err)
+    }
     var genre_id int
-    err = Db.QueryRow("SELECT users.id, genres.id FROM users LEFT JOIN user_genre ON users.id = user_genre.user_id LEFT JOIN genres ON user_genre.genre_id = genres.id WHERE users.line_id = $1 AND genres.name = $2", line_id, genre).Scan(&user_id, &genre_id)
+    err = Db.QueryRow("SELECT id FROM genres WHERE name = $1", genre).Scan(&genre_id)
     if err != nil {
         log.Println(err)
     }
