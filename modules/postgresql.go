@@ -213,12 +213,12 @@ func InsertData(name string, line_id string, student_id string, genre []string) 
 func DeleteData(line_id string) {
     Db := OpenDB()
     var user_id int
-    errs := Db.QueryRow("SELECT id FROM genres WHERE line_id=$1", line_id).Scan(&genre_id)
+    errs := Db.QueryRow("SELECT id FROM users WHERE line_id=$1", line_id).Scan(&user_id)
     if errs != nil {
         log.Println(errs)
     }
-    errs := Db.Exec("DELETE FROM user_genre WHERE user_id=$1", user_id)
-    errs := Db.Exec("UPDATE users SET name=null, student_id=null WHERE line_id=$1", line_id)
+    _, errs = Db.Exec("DELETE FROM user_genre WHERE user_id=$1", user_id)
+    _, errs = Db.Exec("UPDATE users SET name=null, student_id=null WHERE line_id=$1", line_id)
 }
 
 
