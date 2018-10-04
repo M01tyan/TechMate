@@ -38,6 +38,7 @@ func GetLineID(line_id string) (mode string) {
         }
         mode = "init_new"
     }
+    Db.Close()
     return
 }
 
@@ -60,6 +61,7 @@ func UpdateMode(mode_int int, line_id string) (mode string) {
     if err != nil {
         log.Println(err)
     }
+    Db.Close()
     return
 }
 
@@ -83,6 +85,7 @@ func InsertGenre(genre string, line_id string) {
     if errs != nil {
         log.Print(errs)
     }
+    Db.Close()
 }
 
 func InsertName(name string, line_id string) {
@@ -95,6 +98,7 @@ func InsertName(name string, line_id string) {
     if errs != nil {
         log.Print(errs)
     }
+    Db.Close()
 }
 
 func InsertStudentID(student_id string, line_id string) {
@@ -107,6 +111,7 @@ func InsertStudentID(student_id string, line_id string) {
     if errs != nil {
         log.Print(errs)
     }
+    Db.Close()
 }
 
 func GetPost(genre string) (result string) {
@@ -129,6 +134,7 @@ func GetPost(genre string) (result string) {
     for _, r := range complete_es {
         result += r.NAME + "\t" + r.STUDENT_ID + "\n"
     }
+    Db.Close()
     return
 }
 
@@ -147,6 +153,7 @@ func GetGenres(line_id string) (genres []string) {
         rows.Scan(&name)
         genres = append(genres, name)
     }
+    Db.Close()
     return
 }
 
@@ -160,6 +167,7 @@ func GetName(line_id string) (name string) {
     if err != nil {
         log.Println(err)
     }
+    Db.Close()
     return
 }
 
@@ -173,6 +181,7 @@ func GetStudentID(line_id string) (student_id string) {
     if err != nil {
         log.Println(err)
     }
+    Db.Close()
     return
 }
 
@@ -215,6 +224,7 @@ func DeleteData(line_id string) {
     }
     _, errs = Db.Exec("DELETE FROM user_genre WHERE user_id=$1", user_id)
     _, errs = Db.Exec("UPDATE users SET name=NULL, student_id=NULL WHERE line_id=$1", line_id)
+    Db.Close()
 }
 
 
