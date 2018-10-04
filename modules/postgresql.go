@@ -16,14 +16,8 @@ type Post struct {
 
 var Db *sql.DB
 
-Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-if err != nil {
-    log.Print(err)
-    Db.Close()
-}
-
-func GetLineID(line_id string) (mode string) {
-    err = Db.QueryRow("SELECT modes.name FROM users LEFT JOIN user_mode ON users.id = user_mode.user_id LEFT JOIN modes ON user_mode.mode_id = modes.id WHERE users.line_id = $1", line_id).Scan(&mode)
+func GetLineID(Db *sql.DB, line_id string) (mode string) {
+    err := Db.QueryRow("SELECT modes.name FROM users LEFT JOIN user_mode ON users.id = user_mode.user_id LEFT JOIN modes ON user_mode.mode_id = modes.id WHERE users.line_id = $1", line_id).Scan(&mode)
     if err != nil {
         log.Println(err)
     }
@@ -42,14 +36,9 @@ func GetLineID(line_id string) (mode string) {
     return
 }
 
-func UpdateMode(mode_int int, line_id string) (mode string) {
-    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-    if err != nil {
-        log.Print(err)
-        Db.Close()
-    }
+func UpdateMode(Db *sql.DB, mode_int int, line_id string) (mode string) {
     var user_id int
-    err = Db.QueryRow("SELECT id FROM users WHERE line_id = $1", line_id).Scan(&user_id)
+    err := Db.QueryRow("SELECT id FROM users WHERE line_id = $1", line_id).Scan(&user_id)
     if err != nil {
         log.Println(err)
     }
@@ -65,14 +54,9 @@ func UpdateMode(mode_int int, line_id string) (mode string) {
     return
 }
 
-func InsertGenre(genre string, line_id string) {
-    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-    if err != nil {
-        log.Print(err)
-        Db.Close()
-    }
+func InsertGenre(Db *sql.DB, genre string, line_id string) {
     var user_id int
-    err = Db.QueryRow("SELECT id FROM users WHERE line_id = $1", line_id).Scan(&user_id)
+    err := Db.QueryRow("SELECT id FROM users WHERE line_id = $1", line_id).Scan(&user_id)
     if err != nil {
         log.Println(err)
     }
@@ -88,12 +72,7 @@ func InsertGenre(genre string, line_id string) {
     Db.Close()
 }
 
-func InsertName(name string, line_id string) {
-    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-    if err != nil {
-        log.Print(err)
-        Db.Close()
-    }
+func InsertName(Db *sql.DB, name string, line_id string) {
     _, errs := Db.Exec("UPDATE users SET name=$1 WHERE line_id=$2", name, line_id)
     if errs != nil {
         log.Print(errs)
@@ -101,12 +80,7 @@ func InsertName(name string, line_id string) {
     Db.Close()
 }
 
-func InsertStudentID(student_id string, line_id string) {
-    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-    if err != nil {
-        log.Print(err)
-        Db.Close()
-    }
+func InsertStudentID(Db *sql.DB, student_id string, line_id string) {
     _, errs := Db.Exec("UPDATE users SET student_id=$1 WHERE line_id=$2", student_id, line_id)
     if errs != nil {
         log.Print(errs)
@@ -114,15 +88,10 @@ func InsertStudentID(student_id string, line_id string) {
     Db.Close()
 }
 
-func GetPost(genre string) (result string) {
-    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-    if err != nil {
-        log.Print(err)
-        Db.Close()
-    }
-	rows, errs := Db.Query("SELECT users.name, users.student_id FROM users LEFT JOIN user_genre ON users.id = user_genre.user_id LEFT JOIN genres ON user_genre.genre_id = genres.id WHERE genres.name = $1", genre)
+func GetPost(Db *sql.DB, genre string) (result string) {
+    rows, errs := Db.Query("SELECT users.name, users.student_id FROM users LEFT JOIN user_genre ON users.id = user_genre.user_id LEFT JOIN genres ON user_genre.genre_id = genres.id WHERE genres.name = $1", genre)
     if errs != nil {
-        log.Println(err)
+        log.Println(errs)
     }
 
     var complete_es []Post
@@ -138,12 +107,7 @@ func GetPost(genre string) (result string) {
     return
 }
 
-func GetGenres(line_id string) (genres []string) {
-    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-    if err != nil {
-        log.Print(err)
-        Db.Close()
-    }
+func GetGenres(Db *sql.DB, line_id string) (genres []string) {
     rows, err := Db.Query("SELECT genres.name FROM users LEFT JOIN user_genre ON users.id = user_genre.user_id LEFT JOIN genres ON user_genre.genre_id = genres.id WHERE users.line_id = $1", line_id)
     if err != nil {
         log.Print(err)
@@ -157,13 +121,8 @@ func GetGenres(line_id string) (genres []string) {
     return
 }
 
-func GetName(line_id string) (name string) {
-    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-    if err != nil {
-        log.Print(err)
-        Db.Close()
-    }
-    err = Db.QueryRow("SELECT name FROM users WHERE users.line_id = $1", line_id).Scan(&name)
+func GetName(Db *sql.DB, line_id string) (name string) {
+    err := Db.QueryRow("SELECT name FROM users WHERE users.line_id = $1", line_id).Scan(&name)
     if err != nil {
         log.Println(err)
     }
@@ -171,13 +130,8 @@ func GetName(line_id string) (name string) {
     return
 }
 
-func GetStudentID(line_id string) (student_id string) {
-    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-    if err != nil {
-        log.Print(err)
-        Db.Close()
-    }
-    err = Db.QueryRow("SELECT student_id FROM users WHERE users.line_id = $1", line_id).Scan(&student_id)
+func GetStudentID(Db *sql.DB, line_id string) (student_id string) {
+    err := Db.QueryRow("SELECT student_id FROM users WHERE users.line_id = $1", line_id).Scan(&student_id)
     if err != nil {
         log.Println(err)
     }
@@ -210,14 +164,9 @@ func InsertData(name string, line_id string, student_id string, genre []string) 
     }
 }
 
-func DeleteData(line_id string) {
-    Db, errs := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-    if errs != nil {
-        log.Print(errs)
-        Db.Close()
-    }
+func DeleteData(Db *sql.DB, line_id string) {
     var user_id int
-    errs = Db.QueryRow("SELECT id FROM users WHERE line_id=$1", line_id).Scan(&user_id)
+    errs := Db.QueryRow("SELECT id FROM users WHERE line_id=$1", line_id).Scan(&user_id)
     if errs != nil {
         log.Print("error")
         log.Println(errs)
