@@ -56,7 +56,12 @@ func UpdateMode(mode_int int, line_id string) (mode string) {
         log.Print(err)
         Db.Close()
     }
-    _, errs := Db.Exec("UPDATE users SET mode=$1 WHERE line_id=$2", mode_int, line_id)
+    var user_id int
+    err = Db.QueryRow("SELECT id FROM users WHERE line_id = $1", line_id).Scan(&user_id)
+    if err != nil {
+        log.Println(err)
+    }
+    _, errs := Db.Exec("UPDATE user_mode SET user_id=$1 WHERE mode_id=$2", user_id, mode_int)
     if errs != nil {
         log.Print(errs)
     }
