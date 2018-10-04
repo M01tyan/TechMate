@@ -147,7 +147,6 @@ func GetGenres(line_id string) (genres []string) {
         log.Print(err)
         Db.Close()
     }
-    var genre_id int
     rows, err := Db.Query("SELECT genres.name FROM users LEFT JOIN user_genre ON users.id = user_genre.user_id LEFT JOIN genres ON user_genre.genre_id = genres.id WHERE users.line_id = $1", line_id)
     if err != nil {
         log.Print(err)
