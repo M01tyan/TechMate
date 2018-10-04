@@ -97,8 +97,8 @@ func main() {
 							if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("登録をキャンセルしました。\nもう一度学籍番号から入力してください。")).Do(); err != nil {
 								log.Print(err)
 							}
-							mode = modules.UpdateMode(1, event.Source.UserID)
 							modules.DeleteData(event.Source.UserID)
+							mode = modules.UpdateMode(1, event.Source.UserID)
 						}
 					case "default":
 						if message.Text == "検索" {
