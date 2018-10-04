@@ -31,13 +31,12 @@ func GetLineID(line_id string) (mode string) {
         log.Print(err)
         Db.Close()
     }
-    err := Db.QueryRow("SELECT modes.name FROM users LEFT JOIN user_mode ON users.id = user_mode.user_id LEFT JOIN modes ON user_mode.mode_id = modes.id WHERE users.line_id = $1", line_id).Scan(&mode)
+    err = Db.QueryRow("SELECT modes.name FROM users LEFT JOIN user_mode ON users.id = user_mode.user_id LEFT JOIN modes ON user_mode.mode_id = modes.id WHERE users.line_id = $1", line_id).Scan(&mode)
     if err != nil {
         log.Println(err)
     }
-    if mode == nil {
-        var id int
-        _, err := Db.Exec("INSERT INTO users (line_id, mode) VALUES ($1, $2)", line_id, 1)
+    if mode == "" {
+        _, err = Db.Exec("INSERT INTO users (line_id, mode) VALUES ($1, $2)", line_id, 1)
         if err != nil {
             fmt.Println(err)
         }
@@ -56,7 +55,7 @@ func UpdateMode(mode_int int, line_id string) (mode string) {
     if errs != nil {
         log.Print(errs)
     }
-    err := Db.QueryRow("SELECT modes.name FROM users LEFT JOIN user_mode ON users.id = user_mode.user_id LEFT JOIN modes ON user_mode.mode_id = modes.id WHERE users.line_id = $1", line_id).Scan(&mode)
+    err = Db.QueryRow("SELECT modes.name FROM users LEFT JOIN user_mode ON users.id = user_mode.user_id LEFT JOIN modes ON user_mode.mode_id = modes.id WHERE users.line_id = $1", line_id).Scan(&mode)
     if err != nil {
         log.Println(err)
     }
@@ -70,12 +69,12 @@ func InsertGenre(genre string, line_id string) {
         Db.Close()
     }
     var user_id int
-    err := Db.QueryRow("SELECT users.id FROM users LEFT JOIN user_mode ON users.id = user_mode.user_id LEFT JOIN modes ON user_mode.mode_id = modes.id WHERE users.line_id = $1", line_id).Scan(&user_id)
+    err = Db.QueryRow("SELECT users.id FROM users LEFT JOIN user_mode ON users.id = user_mode.user_id LEFT JOIN modes ON user_mode.mode_id = modes.id WHERE users.line_id = $1", line_id).Scan(&user_id)
     if err != nil {
         log.Println(err)
     }
     var genre_id int
-    err := Db.QueryRow("SELECT genres.id FROM users LEFT JOIN user_mode ON users.id = user_mode.user_id LEFT JOIN modes ON user_mode.mode_id = modes.id WHERE genres.name = $1", genre).Scan(&genre_id)
+    err = Db.QueryRow("SELECT genres.id FROM users LEFT JOIN user_mode ON users.id = user_mode.user_id LEFT JOIN modes ON user_mode.mode_id = modes.id WHERE genres.name = $1", genre).Scan(&genre_id)
     if err != nil {
         log.Println(err)
     }
@@ -115,8 +114,8 @@ func GetPost(genre string) (result string) {
         log.Print(err)
         Db.Close()
     }
-	rows, err := Db.Query("SELECT users.name, users.student_id FROM users LEFT JOIN user_genre ON users.id = user_genre.user_id LEFT JOIN genres ON user_genre.genre_id = genres.id WHERE genres.name = $1", genre)
-    if err != nil {
+	rows, errs := Db.Query("SELECT users.name, users.student_id FROM users LEFT JOIN user_genre ON users.id = user_genre.user_id LEFT JOIN genres ON user_genre.genre_id = genres.id WHERE genres.name = $1", genre)
+    if errs != nil {
         log.Println(err)
     }
 
@@ -132,25 +131,62 @@ func GetPost(genre string) (result string) {
     return
 }
 
-func GetGenres() (genre_names []string) {
+func GetGenres(line_id string) (genres []string) {
     Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
     if err != nil {
         log.Print(err)
         Db.Close()
     }
-    row, errs := Db.Query("SELECT name FROM genres")
+    var user_id int
+    err = Db.QueryRow("SELECT id FROM users WHERE line_id=$1", line_id).Scan(&user_id)
+    if err != nil {
+        log.Print(err)
+    }
+
+    var genre_id int
+    err = Db.QueryRow("SELECT genre_id FROM user_genre WHERE user_id=$1", user_id).Scan(&genre_id)
+    if err != nil {
+        log.Print(err)
+    }
+
+    rows, errs := Db.Query("SELECT name FROM genres WHERE id=$1", genre_id)
     if errs != nil {
         log.Print(errs)
     }
-
-    for row.Next() {
-        var e string
-        row.Scan(&e)
-        genre_names = append(genre_names, e)
+    for rows.Next() {
+        var name string
+        rows.Scan(&name)
+        genres = append(genres, name)
     }
-    log.Print(genre_names)
     return
 }
+
+func GetName(line_id string) (name string) {
+    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+    if err != nil {
+        log.Print(err)
+        Db.Close()
+    }
+    err = Db.QueryRow("SELECT name FROM users WHERE users.line_id = $1", line_id).Scan(&name)
+    if err != nil {
+        log.Println(err)
+    }
+    return
+}
+
+func GetStudentID(line_id string) (student_id string) {
+    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+    if err != nil {
+        log.Print(err)
+        Db.Close()
+    }
+    err = Db.QueryRow("SELECT student_id FROM users WHERE users.line_id = $1", line_id).Scan(&student_id)
+    if err != nil {
+        log.Println(err)
+    }
+    return
+}
+
 
 func InsertData(name string, line_id string, student_id string, genre []string) {
     var id int

@@ -16,10 +16,7 @@ import (
 
 func main() {
 	port := os.Getenv("PORT")
-	student_id := ""
-	line_id := ""
-	name := ""
-	my_genre := []string{}
+	var mode string
 
 	bot, err := linebot.New(
 		os.Getenv("LINE_CHANNEL_SECRET"),
@@ -50,7 +47,7 @@ func main() {
 			if event.Type == linebot.EventTypeMessage {
 				switch message := event.Message.(type) {
 				case *linebot.TextMessage:
-					mode := GetLineID(event.Source.UserID)
+					mode = modules.GetLineID(event.Source.UserID)
 					switch mode {
 					case "init_new":
 						r := regexp.MustCompile(`([sdm])1([0-9]{6})`)
@@ -81,13 +78,13 @@ func main() {
 						mode = modules.UpdateMode(3, event.Source.UserID)
 					case "init_genre":
 						if message.Text == "終了" {
-							confirm := modules.Confirm(student_id, name, my_genre)
+							confirm := modules.Confirm(modules.GetName(event.Source.UserID), modules.GetName(event.Source.UserID), modules.GetGenres(event.Source.UserID))
 							if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewFlexMessage("ジャンル", confirm)).Do(); err != nil {
 								log.Print(err)
 							}
 							mode = modules.UpdateMode(4, event.Source.UserID)
 						} else {
-							modules.InsertGenre(message.Text, line_id)
+							modules.InsertGenre(message.Text, event.Source.UserID)
 						}
 					case "init_continue":
 						if message.Text == "はい" {
