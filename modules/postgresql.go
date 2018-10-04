@@ -61,9 +61,9 @@ func UpdateMode(mode_int int, line_id string) (mode string) {
     if err != nil {
         log.Println(err)
     }
-    _, errs := Db.Exec("UPDATE user_mode SET user_id=$1 WHERE mode_id=$2", user_id, mode_int)
-    if errs != nil {
-        log.Print(errs)
+    _, err = Db.Exec("INSERT INTO user_mode (user_id, mode_id) VALUES ($1, $2)", user_id, mode_int)
+    if err != nil {
+        log.Print(err)
     }
     err = Db.QueryRow("SELECT modes.name FROM users LEFT JOIN user_mode ON users.id = user_mode.user_id LEFT JOIN modes ON user_mode.mode_id = modes.id WHERE users.line_id = $1", line_id).Scan(&mode)
     if err != nil {
