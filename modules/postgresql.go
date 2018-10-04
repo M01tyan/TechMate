@@ -61,7 +61,7 @@ func UpdateMode(mode_int int, line_id string) (mode string) {
     if err != nil {
         log.Println(err)
     }
-    _, err = Db.Exec("INSERT INTO user_mode (user_id, mode_id) VALUES ($1, $2)", user_id, mode_int)
+    _, err = Db.Exec("UPDATE user_mode SET mode_id=$1 WHERE user_mode=$2", mode_int, user_id)
     if err != nil {
         log.Print(err)
     }
