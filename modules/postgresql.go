@@ -218,7 +218,7 @@ func DeleteData(line_id string) {
         log.Println(errs)
     }
     _, errs = Db.Exec("DELETE FROM user_genre WHERE user_id=$1", user_id)
-    _, errs = Db.Exec("UPDATE users SET name=null, student_id=null WHERE line_id=$1", line_id)
+    _, errs = Db.Exec("UPDATE users SET name=NULL, student_id=NULL WHERE line_id=$1", line_id)
 }
 
 
