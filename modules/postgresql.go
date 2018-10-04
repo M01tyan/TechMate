@@ -16,12 +16,13 @@ type Post struct {
 
 var Db *sql.DB
 
+Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+if err != nil {
+    log.Print(err)
+    Db.Close()
+}
+
 func GetLineID(line_id string) (mode string) {
-    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-    if err != nil {
-        log.Print(err)
-        Db.Close()
-    }
     err = Db.QueryRow("SELECT modes.name FROM users LEFT JOIN user_mode ON users.id = user_mode.user_id LEFT JOIN modes ON user_mode.mode_id = modes.id WHERE users.line_id = $1", line_id).Scan(&mode)
     if err != nil {
         log.Println(err)
@@ -38,7 +39,6 @@ func GetLineID(line_id string) (mode string) {
         }
         mode = "init_new"
     }
-    Db.Close()
     return
 }
 
