@@ -16,15 +16,6 @@ type Post struct {
 
 var Db *sql.DB
 
-func OpenDB() (Db *sql.DB) {
-    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-    if err != nil {
-        log.Print(err)
-        Db.Close()
-    }
-    return
-}
-
 func GetLineID(line_id string) (mode string) {
     Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
     if err != nil {
@@ -211,10 +202,15 @@ func InsertData(name string, line_id string, student_id string, genre []string) 
 }
 
 func DeleteData(line_id string) {
-    Db := OpenDB()
+    Db, errs := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+    if errs != nil {
+        log.Print(errs)
+        Db.Close()
+    }
     var user_id int
     errs := Db.QueryRow("SELECT id FROM users WHERE line_id=$1", line_id).Scan(&user_id)
     if errs != nil {
+        log.Print("error")
         log.Println(errs)
     }
     _, errs = Db.Exec("DELETE FROM user_genre WHERE user_id=$1", user_id)
