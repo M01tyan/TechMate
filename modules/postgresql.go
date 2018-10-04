@@ -16,7 +16,100 @@ type Post struct {
 
 var Db *sql.DB
 
-func GetPost(genre string) (complete_es []Post) {
+func OpenDB() (Db *sql.DB) {
+    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+    if err != nil {
+        log.Print(err)
+        Db.Close()
+    }
+    return
+}
+
+func GetLineID(line_id string) (mode string) {
+    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+    if err != nil {
+        log.Print(err)
+        Db.Close()
+    }
+    err := Db.QueryRow("SELECT modes.name FROM users LEFT JOIN user_mode ON users.id = user_mode.user_id LEFT JOIN modes ON user_mode.mode_id = modes.id WHERE users.line_id = $1", line_id).Scan(&mode)
+    if err != nil {
+        log.Println(err)
+    }
+    if mode == nil {
+        var id int
+        _, err := Db.Exec("INSERT INTO users (line_id, mode) VALUES ($1, $2)", line_id, 1)
+        if err != nil {
+            fmt.Println(err)
+        }
+        mode = "init_new"
+    }
+    return
+}
+
+func UpdateMode(mode_int int, line_id string) (mode string) {
+    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+    if err != nil {
+        log.Print(err)
+        Db.Close()
+    }
+    _, errs := Db.Exec("UPDATE users SET mode=$1 WHERE line_id=$2", mode_int, line_id)
+    if errs != nil {
+        log.Print(errs)
+    }
+    err := Db.QueryRow("SELECT modes.name FROM users LEFT JOIN user_mode ON users.id = user_mode.user_id LEFT JOIN modes ON user_mode.mode_id = modes.id WHERE users.line_id = $1", line_id).Scan(&mode)
+    if err != nil {
+        log.Println(err)
+    }
+    return
+}
+
+func InsertGenre(genre string, line_id string) {
+    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+    if err != nil {
+        log.Print(err)
+        Db.Close()
+    }
+    var user_id int
+    err := Db.QueryRow("SELECT users.id FROM users LEFT JOIN user_mode ON users.id = user_mode.user_id LEFT JOIN modes ON user_mode.mode_id = modes.id WHERE users.line_id = $1", line_id).Scan(&user_id)
+    if err != nil {
+        log.Println(err)
+    }
+    var genre_id int
+    err := Db.QueryRow("SELECT genres.id FROM users LEFT JOIN user_mode ON users.id = user_mode.user_id LEFT JOIN modes ON user_mode.mode_id = modes.id WHERE genres.name = $1", genre).Scan(&genre_id)
+    if err != nil {
+        log.Println(err)
+    }
+    _, errs := Db.Exec("INSERT INTO user_genre (user_id, genre_id) VALUES ($1, $2)", user_id, genre_id)
+    if errs != nil {
+        log.Print(errs)
+    }
+}
+
+func InsertName(name string, line_id string) {
+    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+    if err != nil {
+        log.Print(err)
+        Db.Close()
+    }
+    _, errs := Db.Exec("UPDATE users SET name=$1 WHERE line_id=$2", name, line_id)
+    if errs != nil {
+        log.Print(errs)
+    }
+}
+
+func InsertStudentID(student_id string, line_id string) {
+    Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+    if err != nil {
+        log.Print(err)
+        Db.Close()
+    }
+    _, errs := Db.Exec("UPDATE users SET student_id=$1 WHERE line_id=$2", student_id, line_id)
+    if errs != nil {
+        log.Print(errs)
+    }
+}
+
+func GetPost(genre string) (result string) {
     Db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
     if err != nil {
         log.Print(err)
@@ -27,12 +120,15 @@ func GetPost(genre string) (complete_es []Post) {
         log.Println(err)
     }
 
+    var complete_es []Post
     for rows.Next() {
         var e Post
 	    rows.Scan(&e.NAME, &e.STUDENT_ID)
 	    complete_es = append(complete_es, e)
 	}
-    log.Print(complete_es)
+    for _, r := range complete_es {
+        result += r.NAME + "\t" + r.STUDENT_ID + "\n"
+    }
     return
 }
 

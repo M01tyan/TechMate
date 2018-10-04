@@ -16,7 +16,6 @@ import (
 
 func main() {
 	port := os.Getenv("PORT")
-	mode := "init_new"
 	student_id := ""
 	line_id := ""
 	name := ""
@@ -51,23 +50,23 @@ func main() {
 			if event.Type == linebot.EventTypeMessage {
 				switch message := event.Message.(type) {
 				case *linebot.TextMessage:
+					mode := GetLineID(event.Source.UserID)
 					switch mode {
 					case "init_new":
-						line_id = event.Source.UserID
 						r := regexp.MustCompile(`([sdm])1([0-9]{6})`)
 						if r.MatchString(message.Text) {
-							student_id = message.Text 
+							modules.InsertStudentID(message.Text, event.Source.UserID)
 							if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("名前を入力してください。")).Do(); err != nil {
 								log.Print(err)
 							}
-							mode = "init_name"
+							mode = modules.UpdateMode(2, event.Source.UserID)
 						} else {
 							if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("学籍番号が正しくありません。\nもう一度入力してください。")).Do(); err != nil {
 								log.Print(err)
 							}
 						}
 					case "init_name":
-						name = message.Text
+						modules.InsertName(message.Text, event.Source.UserID)
 						genres_json, err := ioutil.ReadFile("./modules/genre_flex.json")
 						if err != nil {
 					        log.Fatal(err)
@@ -79,33 +78,29 @@ func main() {
 						if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewFlexMessage("ジャンル", genre_flex)).Do(); err != nil {
 							log.Print(err)
 						}
-						mode = "init_genre"
+						mode = modules.UpdateMode(3, event.Source.UserID)
 					case "init_genre":
 						if message.Text == "終了" {
 							confirm := modules.Confirm(student_id, name, my_genre)
 							if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewFlexMessage("ジャンル", confirm)).Do(); err != nil {
 								log.Print(err)
 							}
-							mode = "init_continue"
+							mode = modules.UpdateMode(4, event.Source.UserID)
 						} else {
-							my_genre = append(my_genre, message.Text)
+							modules.InsertGenre(message.Text, line_id)
 						}
 					case "init_continue":
 						if message.Text == "はい" {
-							modules.InsertData(name, line_id, student_id, my_genre)
+							//modules.InsertData(name, line_id, student_id, my_genre)
 							if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("登録しました。")).Do(); err != nil {
 								log.Print(err)
 							}
-							my_genre = nil
-							mode = "default"
+							mode = modules.UpdateMode(5, event.Source.UserID)
 						} else {
-							student_id = ""
-							name = ""
-							my_genre = nil
 							if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("登録をキャンセルしました。\nもう一度学籍番号から入力してください。")).Do(); err != nil {
 								log.Print(err)
 							}
-							mode = "init_new"
+							mode = modules.UpdateMode(1, event.Source.UserID)
 						}
 					case "default":
 						if message.Text == "検索" {
@@ -120,26 +115,21 @@ func main() {
 							if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewFlexMessage("ジャンル", genre_flex)).Do(); err != nil {
 								log.Print(err)
 							}
-							mode = "search"
+							mode = modules.UpdateMode(6, event.Source.UserID)
 						}
 					case "search":
-						var print_result string
-						search := message.Text
-						search_result := modules.GetPost(search)
-						for _, r := range search_result {
-							print_result += r.NAME + "\t" + r.STUDENT_ID + "\n"
-						}
-						if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(print_result)).Do(); err != nil {
+						result := modules.GetPost(message.Text)
+						if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(result)).Do(); err != nil {
 							log.Print(err)
 						}
-						mode = "default"
+						mode = modules.UpdateMode(5, event.Source.UserID)
 					}
 				}
 			} else if event.Type == linebot.EventTypeFollow {
 				if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("ご登録ありがとうございます。\nあなたの学籍番号を入力してください。")).Do(); err != nil {
 					log.Print(err)
 				}
-				mode = "init_new"
+				mode = modules.GetLineID(event.Source.UserID)
 			}
 		}
 	})
