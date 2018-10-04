@@ -208,7 +208,7 @@ func DeleteData(line_id string) {
         Db.Close()
     }
     var user_id int
-    errs := Db.QueryRow("SELECT id FROM users WHERE line_id=$1", line_id).Scan(&user_id)
+    errs = Db.QueryRow("SELECT id FROM users WHERE line_id=$1", line_id).Scan(&user_id)
     if errs != nil {
         log.Print("error")
         log.Println(errs)
