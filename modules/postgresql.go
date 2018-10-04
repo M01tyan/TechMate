@@ -36,7 +36,12 @@ func GetLineID(line_id string) (mode string) {
         log.Println(err)
     }
     if mode == "" {
-        _, err = Db.Exec("INSERT INTO users (line_id, mode) VALUES ($1, $2)", line_id, 1)
+        var user_id int
+        _, err = Db.QueryRow("INSERT INTO users (line_id) VALUES ($1) RETURNING id", line_id).Scan(&user_id)
+        if err != nil {
+            fmt.Println(err)
+        }
+        _, err = Db.Exec("INSERT INTO user_mode (user_id, mode_id) VALUES ($1, $2)", user_id, 1)
         if err != nil {
             fmt.Println(err)
         }
